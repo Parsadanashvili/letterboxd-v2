@@ -56,7 +56,7 @@ router.post('/users', body('email').isEmail(), async (req, res) => {
         });
 
         await user.save();
-        res.send('Check your email for OTP');
+        res.json({ message: 'Check your email for OTP' });
 
         const mailOptions = {
             from: 'letterboxd.v2@gmail.com', // sender address
