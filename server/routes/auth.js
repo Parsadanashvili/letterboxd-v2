@@ -133,8 +133,6 @@ router.post('/users/setUsername', ensureToken, async (req, res) => {
             return res.json({ message: 'Username set' });
         }
     }
-
-    return res.json({ message: 'ddd' });
 });
 
 module.exports = router;
