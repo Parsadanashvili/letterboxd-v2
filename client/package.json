@@ -9,6 +9,7 @@
     "lint": "./node_modules/.bin/next lint"
   },
   "dependencies": {
+    "axios": "^0.27.2",
     "mongoose": "^6.3.1",
     "next": "12.1.5",
     "react": "18.1.0",
