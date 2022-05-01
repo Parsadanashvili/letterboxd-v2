@@ -1,0 +1,28 @@
+.card {
+    background-color: #151328;
+    border-radius: 35px;
+    box-shadow: rgba(17, 12, 46, 0.15) 0px 48px 100px 0px;
+    display: flex;
+    flex-direction: column;
+    margin: 0 auto;
+    max-width: 500px;
+    min-height: 200px;
+    padding: 20px;
+    width: 100%;
+}
+
+.card-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 25px 5px;
+    border-bottom: #ffffff15 solid 1px;
+}
+
+.card-header .card-header-title {
+    color: #fff;
+    font-size: 1.5rem;
+}
+.card-body {
+    padding: 25px 5px 10px 5px;
+}

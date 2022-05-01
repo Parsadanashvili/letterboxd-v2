@@ -1,18 +1,24 @@
 import Button from "./UI/Button";
+import Styles from "../styles/Header.module.css"
+import Link from "next/link";
 
 const Header = () => {
     return (
-        <header className={"bg-[#151328] px-5 py-3"}>
-            <div className={"wrapper flex flex-row justify-between items-center"}>
-                <div className={"max-w-[120px]"}>
-                    <img src={"/logo.svg"}/>
+        <div className={Styles.header}>
+            <div className={Styles.header__inner}>
+                <div className={"h-[100%]"}>
+                    <Link href={"/"}>
+                        <img className={"w-[128px]"} src={"/logo.svg"} alt={"Logo"}/>
+                    </Link>
                 </div>
 
                 <div className={""}>
-                    <Button className={"py-1.5 px-14"}>Login</Button>
+                    <Link href={"/auth"} passHref>
+                        <Button className={"py-1.5 px-14"}>Login</Button>
+                    </Link>
                 </div>
             </div>
-        </header>
+        </div>
     )
 }
 

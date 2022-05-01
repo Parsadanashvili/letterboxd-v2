@@ -1,14 +1,14 @@
-import {Fragment} from "react";
 import Header from "../components/Header";
+import Styles from "../styles/Layout.module.css"
 
 const App = (props) => {
     return (
-        <Fragment>
+        <div className={Styles.main}>
             <Header/>
-            <main>
+            <div className={Styles.contentBody}>
                 {props.children}
-            </main>
-        </Fragment>
+            </div>
+        </div>
     )
 }
 

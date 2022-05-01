@@ -4,6 +4,10 @@
 @tailwind components;
 @tailwind utilities;
 
+html, body, #__next {
+    height: 100%;
+}
+
 * {
     font-family: 'Poppins', sans-serif;
 }
@@ -20,7 +24,25 @@ section {
     padding: 2rem;
 }
 
-.wrapper {
-    max-width: 1200px;
-    margin: 0px auto;
+.home-banner {
+    position: relative;
+    background: linear-gradient(180deg, rgba(31,29,54,0.20) 0%, rgba(31,29,54,0.20) 93%, rgba(31,29,54,1) 100%), url('/cover.jpg');
+    background-repeat: no-repeat;
+    background-position: center 15%;
+    background-size: 100% auto;
+    color: #ffffff;
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    height: 440px;
+}
+
+@media (max-width: 768px) {
+    .home-banner {
+        background-size: 850px auto;
+        height: 320px;
+    }
 }
