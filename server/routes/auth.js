@@ -1,6 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const User = require('../models/User');
+const Otp = require('../models/OTP');
 const otpGenerator = require('otp-generator');
 const { body, validationResult } = require('express-validator');
 const sendMail = require('../libs/mail');
@@ -51,50 +52,44 @@ router.post('/users', body('email').isEmail(), async (req, res) => {
     const user = await User.findOne({ email: req.body.email });
 
     if (user !== null) {
-        if (user.otp !== null) {
-            sendOTP(email, user.otp);
-            res.json({ message: 'OTP has been sent' });
-        } else {
-            const otp = otpGenerator.generate(6, {
-                upperCase: false,
+        const newOtp = new Otp({
+            email: email,
+            otp: otpGenerator.generate(6, {
+                upperCaseAlphabets: false,
                 specialChars: false,
-            });
-            user.otp = otp;
-            await user.save();
-            sendOTP(email, otp);
-            res.json({ message: 'OTP has been sent' });
-        }
+                lowerCaseAlphabets: false,
+                digits: true,
+            }),
+        });
+        newOtp.save();
+        sendOTP(email, newOtp.otp);
+        res.json({ message: 'OTP has been sent' });
     } else {
-        const { username, email, avatar } = req.body;
-
         const otp = otpGenerator.generate(6, {
             upperCaseAlphabets: false,
             specialChars: false,
             lowerCaseAlphabets: false,
         });
 
-        const user = new User({
-            username,
-            email,
-            otp,
-            avatar,
+        const newOtp = new Otp({
+            email: email,
+            otp: otp,
         });
 
-        await user.save();
-        res.json({ message: 'Check your email for OTP' });
-
+        await newOtp.save();
         sendOTP(email, otp);
+        res.json({ message: 'Check your email for OTP' });
     }
 });
 
 router.post('/users/verifyOTP', (req, res) => {
     const { email, otp } = req.body;
 
-    User.findOne({ email: email })
-        .then((user) => {
-            if (user.otp === otp) {
+    Otp.findOne({ email })
+        .then((Otp) => {
+            if (Otp.otp === otp) {
                 const token = jwt.sign(
-                    { _id: user._id },
+                    { _id: otp._id },
                     process.env.TOKEN_SECRET
                 );
                 res.json({ message: 'OTP verified', token });
@@ -103,8 +98,25 @@ router.post('/users/verifyOTP', (req, res) => {
             }
         })
         .catch((err) => {
-            res.json({ message: err });
+            res.status(500).json({ error: err });
         });
+});
+
+router.post('/users/create', (req, res) => {
+    let token = req.headers.authorization.split(' ')[1];
+    jwt.verify(token, process.env.TOKEN_SECRET, (err) => {
+        if (err) {
+            res.sendStatus(403);
+        } else {
+            const { email, username } = req.body;
+            const newUser = new User({
+                email,
+                username,
+            });
+            newUser.save();
+            res.json({ message: 'User created' });
+        }
+    });
 });
 
 module.exports = router;
