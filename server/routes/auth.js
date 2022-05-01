@@ -2,6 +2,7 @@ const express = require('express');
 const router = express.Router();
 const User = require('../models/User');
 const Otp = require('../models/OTP');
+const Token = require('../models/Token');
 const otpGenerator = require('otp-generator');
 const { body, validationResult } = require('express-validator');
 const sendMail = require('../libs/mail');
@@ -87,14 +88,15 @@ router.post('/users/verifyOTP', (req, res) => {
 
     Otp.findOne({ email })
         .then((Otp) => {
-            if (Otp.otp === otp) {
+            if (Otp.otp === otp && !Otp.verified) {
                 const token = jwt.sign(
                     { _id: otp._id },
                     process.env.TOKEN_SECRET
                 );
+                Otp.verified = true;
                 res.json({ message: 'OTP verified', token });
             } else {
-                res.json({ message: 'OTP not verified' });
+                res.json({ message: 'OTP verification failed' });
             }
         })
         .catch((err) => {
@@ -102,19 +104,24 @@ router.post('/users/verifyOTP', (req, res) => {
         });
 });
 
-router.post('/users/create', (req, res) => {
+router.post('/users/create', ensureToken, (req, res) => {
     let token = req.headers.authorization.split(' ')[1];
     jwt.verify(token, process.env.TOKEN_SECRET, (err) => {
         if (err) {
             res.sendStatus(403);
         } else {
-            const { email, username } = req.body;
-            const newUser = new User({
-                email,
-                username,
-            });
-            newUser.save();
-            res.json({ message: 'User created' });
+            let user = User.findOne({ email: req.body.email });
+            if (user) {
+                res.json({ message: 'User already exists' });
+            } else {
+                const { email, username } = req.body;
+                const newUser = new User({
+                    email,
+                    username,
+                });
+                newUser.save();
+                res.json({ message: 'User created' });
+            }
         }
     });
 });
