@@ -93,17 +93,21 @@ router.post('/users/verifyOTP', (req, res) => {
 
     User.findOne({ email: email }).then((user) => {
         if (user !== null) {
-            Otp.findOne({ email: email }).then((OTP) => {
-                if (OTP.otp === otp) {
-                    const token = jwt.sign({ _id: user._id }, process.env.TOKEN_SECRET);
-                    res.json({ access_token: token, user });
-                } else {
+            Otp.findOne({ email: email })
+                .then((OTP) => {
+                    if (OTP.otp === otp) {
+                        const token = jwt.sign(
+                            { _id: user._id },
+                            process.env.TOKEN_SECRET
+                        );
+                        res.json({ access_token: token, user });
+                    } else {
+                        res.status(403).json({ message: 'OTP is incorrect' });
+                    }
+                })
+                .catch((err) => {
                     res.status(403).json({ message: 'OTP is incorrect' });
-                }
-            })
-            .catch((err) => {
-                res.status(403).json({ message: 'OTP is incorrect' });
-            });
+                });
         } else {
             res.status(404).json({ message: 'User does not exist' });
         }
@@ -116,14 +120,16 @@ router.post('/users/setUsername', ensureToken, (req, res) => {
     let token = jwt.verify(authorization, process.env.TOKEN_SECRET);
 
     let userId = token._id;
-    let user = User.findOne({_id: userId});
+    let user = User.findById(userId.toString());
 
     if (user !== null) {
-        let updatedUser = user.update({}, {
-            username: req.body.username
-        });
+        if (user.username === '') {
+            let newUser = user.update({ username: req.body.username });
 
-        return res.json({ message: 'Username has been set' });
+            return res.json({ message: 'Username has been set' });
+        } else {
+            return res.json({ message: 'Username has already been declared' });
+        }
     }
 
     return res.status(401).json({ message: 'Unauthorized' });
