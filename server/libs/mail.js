@@ -1,20 +1,15 @@
 const nodemailer = require('nodemailer');
 const dotenv = require('dotenv').config();
 
-var nodemailer = require('nodemailer');
-var transporter = nodemailer.createTransport({
-    service: 'gmail',
+let transporter = nodemailer.createTransport({
+    host: 'mail.firefly.com.ge',
+    port: 465,
+    secure: true, // true for 465, false for other ports
     auth: {
-        user: 'letterboxd.v2@gmail.com',
-        pass: '123!123@',
+        user: process.env.EMAIL, // generated ethereal user
+        pass: process.env.PASS, // generated ethereal password
     },
 });
-// const mailOptions = {
-//     from: 'letterboxd.v2@gmail.com', // sender address
-//     to: 'to@email.com', // list of receivers
-//     subject: 'Subject of your email', // Subject line
-//     html: '<p>Your html here</p>', // plain text body
-// };
 
 const sendMail = (mailOptions) => {
     transporter.sendMail(mailOptions, function (err, info) {
@@ -25,3 +20,5 @@ const sendMail = (mailOptions) => {
         }
     });
 };
+
+module.exports = sendMail;
