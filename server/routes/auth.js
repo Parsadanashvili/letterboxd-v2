@@ -30,6 +30,16 @@ router.get('/users', ensureToken, async (req, res) => {
     });
 });
 
+const sendOTP = (email, otp) => {
+    const mailOptions = {
+        from: 'letterboxd.v2@gmail.com', // sender address
+        to: [email], // list of receivers
+        subject: 'Your one time password', // Subject line
+        html: `<h1>${otp}</h1>`, // plain text body
+    };
+    sendMail(mailOptions);
+};
+
 router.post('/users', body('email').isEmail(), async (req, res) => {
     const errors = validationResult(req);
 
@@ -37,8 +47,23 @@ router.post('/users', body('email').isEmail(), async (req, res) => {
         return res.status(400).json({ errors: errors.array()[0].msg });
     }
 
-    if ((await User.findOne({ email: req.body.email })) !== null) {
-        return res.status(500).json({ message: 'User already exists' });
+    const { email } = req.body;
+    const user = await User.findOne({ email: req.body.email });
+
+    if (user !== null) {
+        if (user.otp !== null) {
+            sendOTP(email, user.otp);
+            res.json({ message: 'OTP has been sent' });
+        } else {
+            const otp = otpGenerator.generate(6, {
+                upperCase: false,
+                specialChars: false,
+            });
+            user.otp = otp;
+            await user.save();
+            sendOTP(email, otp);
+            res.json({ message: 'OTP has been sent' });
+        }
     } else {
         const { username, email, avatar } = req.body;
 
@@ -58,14 +83,7 @@ router.post('/users', body('email').isEmail(), async (req, res) => {
         await user.save();
         res.json({ message: 'Check your email for OTP' });
 
-        const mailOptions = {
-            from: 'letterboxd.v2@gmail.com', // sender address
-            to: [email], // list of receivers
-            subject: 'Your one time password', // Subject line
-            html: `<h1>${otp}</h1>`, // plain text body
-        };
-
-        sendMail(mailOptions);
+        sendOTP(email, otp);
     }
 });
 
