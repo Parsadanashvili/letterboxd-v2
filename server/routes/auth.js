@@ -117,29 +117,24 @@ router.post('/users/verifyOTP', (req, res) => {
 router.post('/users/setUsername', ensureToken, async (req, res) => {
     let authorization = req.headers.authorization.split(' ')[1];
     let token = jwt.verify(authorization, process.env.TOKEN_SECRET);
-    let userId = token._id
-    let user = User.findById(userId.toString());
+    let userId = token._id;
+    let user = await User.findById(userId);
 
+    if (user === null) {
+        return res.status(403).json({ message: 'User does not exist' });
+    } else {
+        if (user.username !== '') {
+            return res.status(403).json({ message: 'Username already set' });
+        } else {
+            let newUser = await User.findByIdAndUpdate(userId, {
+                username: req.body.username,
+            });
 
+            return res.json({ message: 'Username set' });
+        }
+    }
 
-    // if (user !== null) {
-    //     if (!user.username) {
-    //         try {
-    //             await User.findByIdAndUpdate(
-    //                 userId,
-    //                 { username: req.body.username }
-    //             );
-    //         } catch (err) {
-    //             res.status(500).json({ message: 'Something went wrong' });
-    //         }
-    //
-    //         return res.json({ user })
-    //     } else {
-    //         return res.json({ message: 'Username has already been declared' });
-    //     }
-    // } else {
-    //     return res.status(401).json({ message: 'Unauthorized' });
-    // }
+    return res.json({ message: 'ddd' });
 });
 
 module.exports = router;
