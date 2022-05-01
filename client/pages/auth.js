@@ -15,7 +15,7 @@ const Auth = () => {
         if(sentOtp) return;
 
         const email = emailRef.current.value;
-        axios.post('http://localhost:3003/users', {email, username: 'Sickly', avatar: '1'})
+        axios.post('http://localhost:3003/users', {email})
             .then(response => {
                 alert('OTP sent, check email');
                 setSentOtp(true);

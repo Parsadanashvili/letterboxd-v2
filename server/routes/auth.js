@@ -66,6 +66,11 @@ router.post('/users', body('email').isEmail(), async (req, res) => {
         sendOTP(email, newOtp.otp);
         res.json({ message: 'OTP has been sent' });
     } else {
+        const newUser = new User({
+            email,
+        });
+        await newUser.save();
+
         const otp = otpGenerator.generate(6, {
             upperCaseAlphabets: false,
             specialChars: false,
@@ -86,44 +91,42 @@ router.post('/users', body('email').isEmail(), async (req, res) => {
 router.post('/users/verifyOTP', (req, res) => {
     const { email, otp } = req.body;
 
-    Otp.findOne({ email })
-        .then((Otp) => {
-            if (Otp.otp === otp && !Otp.verified) {
-                const token = jwt.sign(
-                    { _id: otp._id },
-                    process.env.TOKEN_SECRET
-                );
-                Otp.verified = true;
-                res.json({ message: 'OTP verified', token });
-            } else {
-                res.json({ message: 'OTP verification failed' });
-            }
-        })
-        .catch((err) => {
-            res.status(500).json({ error: err });
-        });
-});
-
-router.post('/users/create', ensureToken, (req, res) => {
-    let token = req.headers.authorization.split(' ')[1];
-    jwt.verify(token, process.env.TOKEN_SECRET, (err) => {
-        if (err) {
-            res.sendStatus(403);
+    User.findOne({ email: email }).then((user) => {
+        if (user !== null) {
+            Otp.findOne({ email: email }).then((OTP) => {
+                if (OTP.otp === otp) {
+                    const token = jwt.sign({ _id: user._id }, process.env.TOKEN_SECRET);
+                    res.json({ access_token: token, user });
+                } else {
+                    res.status(403).json({ message: 'OTP is incorrect' });
+                }
+            })
+            .catch((err) => {
+                res.status(403).json({ message: 'OTP is incorrect' });
+            });
         } else {
-            let user = User.findOne({ email: req.body.email });
-            if (user) {
-                res.json({ message: 'User already exists' });
-            } else {
-                const { email, username } = req.body;
-                const newUser = new User({
-                    email,
-                    username,
-                });
-                newUser.save();
-                res.json({ message: 'User created' });
-            }
+            res.status(404).json({ message: 'User does not exist' });
         }
     });
+});
+
+router.post('/users/setUsername', ensureToken, (req, res) => {
+    let authorization = req.headers.authorization.split(' ')[1];
+
+    let token = jwt.verify(authorization, process.env.TOKEN_SECRET);
+
+    let userId = token._id;
+    let user = User.findOne({_id: userId});
+
+    if (user !== null) {
+        let updatedUser = user.update({}, {
+            username: req.body.username
+        });
+
+        return res.json({ message: 'Username has been set' });
+    }
+
+    return res.status(401).json({ message: 'Unauthorized' });
 });
 
 module.exports = router;
