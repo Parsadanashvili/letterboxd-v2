@@ -123,7 +123,7 @@ router.post('/users/setUsername', ensureToken, (req, res) => {
     let user = User.findById(userId.toString());
 
     if (user !== null) {
-        if (user.username === '') {
+        if (!user.username) {
             let newUser = user.update({ username: req.body.username });
 
             return res.json({ message: 'Username has been set' });
