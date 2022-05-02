@@ -4,20 +4,19 @@
 @tailwind components;
 @tailwind utilities;
 
-html, body, #__next {
-    height: 100%;
-}
-
 * {
     font-family: 'Poppins', sans-serif;
 }
 
-input, input:active, input:focus, input:hover {
+input,
+input:active,
+input:focus,
+input:hover {
     outline: 0;
 }
 
 body {
-    background: #1F1D36;
+    background: #1f1d36;
 }
 
 section {
@@ -26,7 +25,13 @@ section {
 
 .home-banner {
     position: relative;
-    background: linear-gradient(180deg, rgba(31,29,54,0.20) 0%, rgba(31,29,54,0.20) 93%, rgba(31,29,54,1) 100%), url('/cover.jpg');
+    background: linear-gradient(
+            180deg,
+            rgba(31, 29, 54, 0.2) 0%,
+            rgba(31, 29, 54, 0.2) 93%,
+            rgba(31, 29, 54, 1) 100%
+        ),
+        url('/cover.jpg');
     background-repeat: no-repeat;
     background-position: center 15%;
     background-size: 100% auto;
