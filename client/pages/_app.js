@@ -23,7 +23,8 @@ function MyApp({Component, pageProps}) {
             if (isLoggedIn) {
                 return {
                     user,
-                    access_token: accessToken
+                    access_token: accessToken,
+                    isLoggedIn: !!accessToken && !!user,
                 }
             }
         }
