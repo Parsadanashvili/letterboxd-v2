@@ -3,13 +3,11 @@ import CardBody from "../UI/CardBody";
 import Input from "../UI/Input";
 import Button from "../UI/Button";
 import Card from "../UI/Card";
-import axios from "axios";
 import {useEffect, useRef, useState} from "react";
-import {useDispatch} from "react-redux";
-import {authActions} from "../../store/Auth";
+import api from "../../lib/api";
+import Cookies from "cookie-cutter";
 
 const StepEmail = ({changeStep}) => {
-    const dispatch = useDispatch();
     const [sentOtp, setSentOtp] = useState(false);
     const emailRef = useRef();
     const otpRef = useRef();
@@ -26,7 +24,7 @@ const StepEmail = ({changeStep}) => {
         if(sentOtp) return;
 
         const email = emailRef.current.value;
-        axios.post('http://localhost:3003/auth', {email})
+        api().post('/auth', {email})
             .then(response => {
                 alert('OTP sent, check email');
                 setSentOtp(true);
@@ -42,10 +40,15 @@ const StepEmail = ({changeStep}) => {
         const email = emailRef.current.value;
         const otp = +otpRef.current.value;
 
-        axios.post('http://localhost:3003/auth/verify', {email, otp})
+        api().post('http://localhost:3003/auth/verify', {email, otp})
             .then(async response => {
-                await dispatch(authActions.login(response.data));
-                changeStep()
+                await Cookies.set('accessToken', response.data.access_token);
+                await Cookies.set('user', JSON.stringify(response.data.user));
+                if(response.data.user?.username) {
+                    changeStep(2);
+                } else {
+                    changeStep(1);
+                }
             })
             .catch(error => {
                 console.log(error);

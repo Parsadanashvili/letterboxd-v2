@@ -1,16 +1,13 @@
-import React, {useRef} from 'react'
+import React, {useEffect, useRef} from 'react'
 import Card from "../UI/Card";
 import CardHeader from "../UI/CardHeader";
 import CardBody from "../UI/CardBody";
 import Input from "../UI/Input";
 import Button from "../UI/Button";
-import axios from "axios";
-import {useDispatch, useSelector} from "react-redux";
-import {authActions} from "../../store/Auth";
+import api from "../../lib/api";
+import Cookies from "cookie-cutter";
 
 const StepUsername = ({changeStep}) => {
-    const dispatch = useDispatch();
-    const accessToken = useSelector(state => state.auth.access_token);
     const usernameRef = useRef();
 
     const submitHandler = (event) => {
@@ -23,22 +20,20 @@ const StepUsername = ({changeStep}) => {
             return;
         }
 
-        axios.post('http://localhost:3003/users/setUsername', {username}, {
-            headers: {
-                'Authorization': 'Bearer ' + accessToken
-            }
-        })
-        .then(async response => {
-            if(response.data.message) {
-                dispatch(authActions.setUsername(username));
-                changeStep(3);
-            } else {
-                throw new Error('Something went wrong');
-            }
-        })
-        .catch(error => {
-            console.log(error.response.data.message);
-        });
+        api().put('/users', {username})
+            .then(async response => {
+                if(response.data.message) {
+                    const user = await JSON.parse(Cookies.get('user'));
+                    user.username = username;
+                    await Cookies.set('user', JSON.stringify(user));
+                    changeStep(1);
+                } else {
+                    throw new Error('Something went wrong');
+                }
+            })
+            .catch(error => {
+                console.log(error.response.data);
+            });
     }
 
     return (

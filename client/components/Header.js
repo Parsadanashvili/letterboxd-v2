@@ -1,17 +1,10 @@
 import Button from "./UI/Button";
 import Styles from "../styles/Header.module.css"
 import Link from "next/link";
-import {useSelector} from "react-redux";
-import {useEffect, useState} from "react";
+import {useState} from "react";
 
 const Header = () => {
     const [isLoggedIn, setIsLoggedIn] = useState(false);
-
-    let stateIsLoggedIn = useSelector(state => state.auth.isLoggedIn);
-
-    useEffect(() => {
-        setIsLoggedIn(stateIsLoggedIn);
-    }, [stateIsLoggedIn]);
 
     return (
         <div className={Styles.header}>

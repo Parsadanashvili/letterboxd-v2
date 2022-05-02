@@ -1,9 +1,8 @@
 import StepAvatar from "../components/Auth/StepAvatar";
 import StepUsername from "../components/Auth/StepUsername";
 import StepEmail from "../components/Auth/StepEmail";
-import {useEffect, useState} from "react";
-import {useSelector} from "react-redux";
-import {redirect} from "next/dist/server/api-utils";
+import {useState} from "react";
+import * as cookie from 'cookie-cutter'
 import {isEmpty} from "lodash";
 
 const steps = {
@@ -12,23 +11,12 @@ const steps = {
     3: StepAvatar,
 }
 
-const Auth = () => {
-    const user = useSelector(state => state.auth.user);
-    const [step, setStep] = useState(1);
+const Auth = ({currentStep}) => {
+    const [step, setStep] = useState(currentStep);
     const Step = steps[step];
 
-    useEffect(() => {
-        if(!isEmpty(user) && !user.username) {
-            setStep(2)
-        } else if(!user) {
-            setStep(1);
-        } else if (user.username && !user.avatar) {
-            setStep(3);
-        }
-    }, [user])
-
-    const handleChangeStep = () => {
-        let nextStep = step + 1;
+    const handleChangeStep = (next) => {
+        let nextStep = step + next || 1;
 
         if (steps[nextStep] != null) {
             setStep(nextStep);
@@ -40,6 +28,25 @@ const Auth = () => {
             <Step changeStep={handleChangeStep}/>
         </div>
     )
+}
+
+export const getServerSideProps = (ctx) => {
+    let step = 1;
+
+    const getCookie = ctx.req.headers.cookie
+    const user = JSON.parse(cookie(getCookie).get('user') ?? '{}');
+
+    if(!isEmpty(user) && !user.username) {
+        step = 2;
+    } else if(!isEmpty(user) && !user.avatar) {
+        step = 3;
+    }
+
+    return {
+        props: {
+            currentStep: step
+        }
+    }
 }
 
 export default Auth
