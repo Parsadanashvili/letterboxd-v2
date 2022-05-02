@@ -35,7 +35,7 @@ router.post('/auth', async (req, res) => {
     let user = await User.findOne({ email });
     let otp = await OTP.findOne({ email });
 
-    const handleLogin = () => {
+    const handleLogin = async () => {
         const otp = otpGenerator.generate(6, {
             upperCaseAlphabets: false,
             specialChars: false,
@@ -47,7 +47,7 @@ router.post('/auth', async (req, res) => {
             otp,
         });
 
-        newOtp.save();
+        await newOtp.save();
         sendOTP(email, otp);
         return res.json({
             message: 'OTP has been sent to your email',
@@ -55,7 +55,9 @@ router.post('/auth', async (req, res) => {
         });
     };
 
-    user !== null && handleLogin();
+    if (user !== null) {
+        handleLogin();
+    }
 
     if (otp) {
         return res.status(403).json({ message: 'OTP already sent' });
