@@ -4,6 +4,7 @@ import StepEmail from "../components/Auth/StepEmail";
 import {useEffect, useState} from "react";
 import {useSelector} from "react-redux";
 import {redirect} from "next/dist/server/api-utils";
+import {isEmpty} from "lodash";
 
 const steps = {
     1: StepEmail,
@@ -17,14 +18,12 @@ const Auth = () => {
     const Step = steps[step];
 
     useEffect(() => {
-        if(user && !user.username) {
+        if(!isEmpty(user) && !user.username) {
             setStep(2)
         } else if(!user) {
             setStep(1);
         } else if (user.username && !user.avatar) {
             setStep(3);
-        } else {
-            redirect('/movies');
         }
     }, [user])
 

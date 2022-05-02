@@ -26,7 +26,7 @@ const StepEmail = ({changeStep}) => {
         if(sentOtp) return;
 
         const email = emailRef.current.value;
-        axios.post('http://localhost:3003/users', {email})
+        axios.post('http://localhost:3003/auth', {email})
             .then(response => {
                 alert('OTP sent, check email');
                 setSentOtp(true);
@@ -42,7 +42,7 @@ const StepEmail = ({changeStep}) => {
         const email = emailRef.current.value;
         const otp = +otpRef.current.value;
 
-        axios.post('http://localhost:3003/users/verifyOTP', {email, otp})
+        axios.post('http://localhost:3003/auth/verify', {email, otp})
             .then(async response => {
                 await dispatch(authActions.login(response.data));
                 changeStep()

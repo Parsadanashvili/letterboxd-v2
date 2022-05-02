@@ -35,7 +35,7 @@ router.post('/auth', async (req, res) => {
     let user = await User.findOne({ email });
     let otp = await OTP.findOne({ email });
 
-    const handleLogin = async () => {
+    if (user !== null) {
         const otp = otpGenerator.generate(6, {
             upperCaseAlphabets: false,
             specialChars: false,
@@ -53,10 +53,6 @@ router.post('/auth', async (req, res) => {
             message: 'OTP has been sent to your email',
             login: true,
         });
-    };
-
-    if (user !== null) {
-        handleLogin();
     }
 
     if (otp) {
@@ -82,7 +78,8 @@ router.post('/auth', async (req, res) => {
 router.post('/auth/verify', async (req, res) => {
     let { email, otp } = req.body;
     email = email.toLowerCase();
-    if ((await User.findOne({ email })) !== null) {
+    const user = await User.findOne({ email });
+    if ((user) !== null) {
         OTP.findOne({ email })
             .then((code) => {
                 if (code.otp === otp) {
@@ -90,11 +87,12 @@ router.post('/auth/verify', async (req, res) => {
                     code.remove();
                     return res.json({
                         access_token: token,
+                        user: user,
                     });
                 }
             })
             .catch((err) => {
-                res.status(403).json({ message: 'OTP is incorrect' });
+                return res.status(403).json({ message: 'OTP is incorrect' });
             });
     } else {
         OTP.findOne({ email }).then((code) => {
