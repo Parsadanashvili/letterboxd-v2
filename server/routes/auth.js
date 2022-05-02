@@ -2,7 +2,6 @@ const express = require('express');
 const router = express.Router();
 const User = require('../models/User');
 const Otp = require('../models/OTP');
-const Token = require('../models/Token');
 const otpGenerator = require('otp-generator');
 const { body, validationResult } = require('express-validator');
 const sendMail = require('../libs/mail');
@@ -100,6 +99,7 @@ router.post('/users/verifyOTP', (req, res) => {
                             { _id: user._id },
                             process.env.TOKEN_SECRET
                         );
+                        OTP.remove();
                         res.json({ access_token: token, user });
                     } else {
                         res.status(403).json({ message: 'OTP is incorrect' });
