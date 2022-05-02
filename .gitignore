@@ -27,6 +27,7 @@ yarn-error.log*
 .pnpm-debug.log*
 
 # local env files
+client/.env.local
 .env*.local
 server/.env*.local
 
@@ -35,3 +36,4 @@ server/.env*.local
 
 .idea
 server/.env
+client/.env.local
