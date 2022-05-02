@@ -31,7 +31,7 @@ router.get('/users', ensureToken, (req, res) => {
 });
 
 router.post('/auth', async (req, res) => {
-    const { email } = req.body;
+    let { email } = req.body;
     let user = await User.findOne({ email });
     let otp = await OTP.findOne({ email });
 
@@ -43,8 +43,8 @@ router.post('/auth', async (req, res) => {
             lowerCaseAlphabets: false,
         });
 
-        const newOtp = new Otp({
-            email: email,
+        const newOtp = new OTP({
+            email: email.toLowerCase(),
             otp,
         });
 
@@ -56,7 +56,7 @@ router.post('/auth', async (req, res) => {
         });
     };
 
-    if (otp !== null) {
+    if (otp) {
         return res.status(403).json({ message: 'OTP already sent' });
     } else {
         let otp = otpGenerator.generate(6, {
@@ -66,7 +66,7 @@ router.post('/auth', async (req, res) => {
         });
 
         let code = new OTP({
-            email: email,
+            email: email.toLowerCase(),
             otp,
         });
 
@@ -77,7 +77,8 @@ router.post('/auth', async (req, res) => {
 });
 
 router.post('/auth/verify', async (req, res) => {
-    const { email, otp } = req.body;
+    let { email, otp } = req.body;
+    email = email.toLowerCase();
     if ((await User.findOne({ email })) !== null) {
         OTP.findOne({ email })
             .then((code) => {
@@ -103,9 +104,22 @@ router.post('/auth/verify', async (req, res) => {
                 code.remove();
                 return res.json({
                     access_token: token,
+                    user: newUser,
                 });
             }
         });
+    }
+});
+
+router.put('/users/', ensureToken, async (req, res) => {
+    const email = jwt.verify(req.token, process.env.TOKEN_SECRET);
+    const user = await User.findOne({ email: email });
+
+    if (user !== null) {
+        await User.findOneAndUpdate({ email }, { username: req.body.username });
+        return res.json({ message: 'Username has been updated' });
+    } else {
+        return res.status(404).json({ message: 'User not found' });
     }
 });
 
