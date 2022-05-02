@@ -13,6 +13,9 @@ const authSlice = createSlice({
         hydrate:(state, action) => {
             return action.payload
         },
+        setUsername:(state, action) => {
+            state.user.username = action.payload
+        },
         login: (state, action) => {
             state.user = action.payload.user;
             state.access_token = action.payload.access_token;
