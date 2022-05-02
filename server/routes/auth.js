@@ -1,11 +1,11 @@
 const express = require('express');
 const router = express.Router();
 const User = require('../models/User');
-const Otp = require('../models/OTP');
 const otpGenerator = require('otp-generator');
+const sendOTP = require('../libs/otp');
 const { body, validationResult } = require('express-validator');
-const sendMail = require('../libs/mail');
 const jwt = require('jsonwebtoken');
+const OTP = require('../models/OTP');
 
 const ensureToken = (req, res, next) => {
     const bearerHeader = req.headers['authorization'];
@@ -19,57 +19,24 @@ const ensureToken = (req, res, next) => {
     }
 };
 
-router.get('/users', ensureToken, async (req, res) => {
-    jwt.verify(req.token, process.env.TOKEN_SECRET, (err, data) => {
+router.get('/users', ensureToken, (req, res) => {
+    jwt.verify(req.token, process.env.TOKEN_SECRET, (err) => {
         if (err) {
-            res.sendStatus(403);
-        } else {
-            User.find().then((users) => {
-                res.json({ users });
-            });
+            res.sendStatus(403).json({ message: 'Forbidden' });
         }
+        User.find().then((users) => {
+            return res.json({ users });
+        });
     });
 });
 
-const sendOTP = (email, otp) => {
-    const mailOptions = {
-        from: 'letterboxd.v2@gmail.com', // sender address
-        to: [email], // list of receivers
-        subject: 'Your one time password', // Subject line
-        html: `<h1>${otp}</h1>`, // plain text body
-    };
-    sendMail(mailOptions);
-};
-
-router.post('/users', body('email').isEmail(), async (req, res) => {
-    const errors = validationResult(req);
-
-    if (!errors.isEmpty()) {
-        return res.status(400).json({ errors: errors.array()[0].msg });
-    }
-
+router.post('/auth', async (req, res) => {
     const { email } = req.body;
-    const user = await User.findOne({ email: req.body.email });
+    let user = await User.findOne({ email });
+    let otp = await OTP.findOne({ email });
 
-    if (user !== null) {
-        const newOtp = new Otp({
-            email: email,
-            otp: otpGenerator.generate(6, {
-                upperCaseAlphabets: false,
-                specialChars: false,
-                lowerCaseAlphabets: false,
-                digits: true,
-            }),
-        });
-        newOtp.save();
-        sendOTP(email, newOtp.otp);
-        res.json({ message: 'OTP has been sent' });
-    } else {
-        const newUser = new User({
-            email,
-        });
-        await newUser.save();
-
+    user !== null && handleLogin();
+    const handleLogin = () => {
         const otp = otpGenerator.generate(6, {
             upperCaseAlphabets: false,
             specialChars: false,
@@ -78,60 +45,67 @@ router.post('/users', body('email').isEmail(), async (req, res) => {
 
         const newOtp = new Otp({
             email: email,
-            otp: otp,
+            otp,
         });
 
-        await newOtp.save();
+        newOtp.save();
         sendOTP(email, otp);
-        res.json({ message: 'Check your email for OTP' });
+        return res.json({
+            message: 'OTP has been sent to your email',
+            login: true,
+        });
+    };
+
+    if (otp !== null) {
+        return res.status(403).json({ message: 'OTP already sent' });
+    } else {
+        let otp = otpGenerator.generate(6, {
+            upperCaseAlphabets: false,
+            specialChars: false,
+            lowerCaseAlphabets: false,
+        });
+
+        let code = new OTP({
+            email: email,
+            otp,
+        });
+
+        await code.save();
+        sendOTP(email, otp);
+        return res.json({ message: 'OTP has been sent to your email' });
     }
 });
 
-router.post('/users/verifyOTP', (req, res) => {
+router.post('/auth/verify', async (req, res) => {
     const { email, otp } = req.body;
-
-    User.findOne({ email: email }).then((user) => {
-        if (user !== null) {
-            Otp.findOne({ email: email })
-                .then((OTP) => {
-                    if (OTP.otp === otp) {
-                        const token = jwt.sign(
-                            { _id: user._id },
-                            process.env.TOKEN_SECRET
-                        );
-                        OTP.remove();
-                        res.json({ access_token: token, user });
-                    } else {
-                        res.status(403).json({ message: 'OTP is incorrect' });
-                    }
-                })
-                .catch((err) => {
-                    res.status(403).json({ message: 'OTP is incorrect' });
-                });
-        } else {
-            res.status(404).json({ message: 'User does not exist' });
-        }
-    });
-});
-
-router.post('/users/setUsername', ensureToken, async (req, res) => {
-    let authorization = req.headers.authorization.split(' ')[1];
-    let token = jwt.verify(authorization, process.env.TOKEN_SECRET);
-    let userId = token._id;
-    let user = await User.findById(userId);
-
-    if (user === null) {
-        return res.status(403).json({ message: 'User does not exist' });
-    } else {
-        if (user.username !== '') {
-            return res.status(403).json({ message: 'Username already set' });
-        } else {
-            let newUser = await User.findByIdAndUpdate(userId, {
-                username: req.body.username,
+    if ((await User.findOne({ email })) !== null) {
+        OTP.findOne({ email })
+            .then((code) => {
+                if (code.otp === otp) {
+                    const token = jwt.sign(email, process.env.TOKEN_SECRET);
+                    code.remove();
+                    return res.json({
+                        access_token: token,
+                    });
+                }
+            })
+            .catch((err) => {
+                res.status(403).json({ message: 'OTP is incorrect' });
             });
-
-            return res.json({ message: 'Username set' });
-        }
+    } else {
+        OTP.findOne({ email }).then((code) => {
+            if (code.otp === otp) {
+                const newUser = new User({
+                    email,
+                });
+                newUser.save();
+                const token = jwt.sign(email, process.env.TOKEN_SECRET);
+                code.remove();
+                return res.json({
+                    access_token: token,
+                });
+            }
+        });
     }
 });
 

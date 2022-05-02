@@ -1,5 +1,4 @@
 const nodemailer = require('nodemailer');
-const dotenv = require('dotenv').config();
 
 let transporter = nodemailer.createTransport({
     host: 'mail.firefly.com.ge',
