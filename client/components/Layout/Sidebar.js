@@ -11,23 +11,28 @@ import {
     HeartIcon
 } from "@heroicons/react/outline";
 import {useSelector} from "react-redux";
+import {isEmpty} from "lodash";
 
 const Sidebar = () => {
     const authCtx = useContext(AuthContext);
     const sidebarIsOpen = useSelector(state => state.ui.sidebarIsOpen);
 
     return (
-        <div className={`fixed xl:hidden bottom-0 right-0 transition-all ease-in-out z-[99999] bg-[#151328] ${sidebarIsOpen ? "w-[300px] visible" : "w-[0px] invisible"} h-[calc(100vh-95px)] shadow-2xl`}>
-            <Link href={"/userId"}>
-                <div className={"flex items-center justify-end m-7"}>
-                    <div className={"mr-3"}>
-                        <p className={"text-white cursor-pointer"}>{authCtx.user?.username}</p>
+        <div
+            className={`fixed xl:hidden bottom-0 right-0 transition-all ease-in-out z-[99999] bg-[#151328] ${sidebarIsOpen ? "w-[300px] visible" : "w-[0px] invisible"} h-[calc(100vh-95px)] shadow-2xl`}>
+
+            {!isEmpty(authCtx.user) && (
+                <Link href={"/id"}>
+                    <div className={"flex items-center justify-end m-7"}>
+                        <div className={"mr-3"}>
+                            <p className={"text-white cursor-pointer"}>{authCtx.user?.username}</p>
+                        </div>
+                        <div className={"rounded-full overflow-hidden w-[50px] h-[50px] cursor-pointer"}>
+                            <img src={authCtx.user?.avatar} alt={"Avatar"}/>
+                        </div>
                     </div>
-                    <div className={"rounded-full overflow-hidden w-[50px] h-[50px] cursor-pointer"}>
-                        <img src={authCtx.user?.avatar} alt={"Avatar"}/>
-                    </div>
-                </div>
-            </Link>
+                </Link>
+            )}
 
             <ul className={"mt-12 space-y-3 text-gray-300"}>
                 <li className={"cursor-pointer p-3 hover:bg-[#1f1d36] transition ease-in-out"}>
@@ -84,12 +89,16 @@ const Sidebar = () => {
                     </Link>
                 </li>
 
-                <li onClick={authCtx.logout} className={"cursor-pointer p-3 hover:bg-red-500 text-gray-300 transition ease-in-out"}>
-                    <div className={"flex justify-end items-center space-x-3 px-7"}>
-                        <LogoutIcon className={"h-6 w-6"}/>
-                        <div>Logout</div>
-                    </div>
-                </li>
+
+                {!isEmpty(authCtx.user) && (
+                    <li onClick={authCtx.logout}
+                        className={"cursor-pointer p-3 hover:bg-red-500 text-gray-300 transition ease-in-out"}>
+                        <div className={"flex justify-end items-center space-x-3 px-7"}>
+                            <LogoutIcon className={"h-6 w-6"}/>
+                            <div>Logout</div>
+                        </div>
+                    </li>
+                )}
             </ul>
         </div>
     )

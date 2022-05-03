@@ -2,8 +2,10 @@ import {useContext} from "react";
 import AuthContext from "../../Context/auth-context";
 import Button from "../../components/UI/Button";
 import Head from "next/head";
+import axios from "axios";
+import {isEmpty} from "lodash";
 
-const userId = ({user}) => {
+const id = ({user}) => {
     const authCtx = useContext(AuthContext);
 
     return (
@@ -16,16 +18,18 @@ const userId = ({user}) => {
                     <div className={"flex flex-col lg:flex-row items-center justify-between"}>
                         <div className={"my-5 flex flex-row items-center"}>
                             <div className={"rounded-full overflow-hidden w-[120px] h-[120px]"}>
-                                <img src={authCtx.user?.avatar} alt={"Avatar"} />
+                                <img src={user?.avatar} alt={"Avatar"}/>
                             </div>
 
                             <div className={"ml-6 space-y-3"}>
-                                <h1 className={"text-2xl"}>{authCtx.user?.username}</h1>
-                                <Button className={"rounded-md py-1 px-6 text-sm"}>Edit Profile</Button>
+                                <h1 className={"text-2xl"}>{user?.username}</h1>
+                                {(user?._id === authCtx?.user?._id) &&
+                                    <Button className={"rounded-md py-1 px-6 text-sm"}>Edit Profile</Button>}
                             </div>
                         </div>
 
-                        <div className={"my-5 px-3 grid grid-flow-row-dense grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 lg:divide-x items-center justify-center w-[100%] lg:w-[50%]"}>
+                        <div
+                            className={"my-5 px-3 grid grid-flow-row-dense grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 lg:divide-x items-center justify-center w-[100%] lg:w-[50%]"}>
                             <div className={"flex flex-col items-center justify-center"}>
                                 <div className={"text-[28px] font-bold cursor-pointer"}>
                                     67
@@ -78,14 +82,26 @@ const userId = ({user}) => {
     )
 }
 
-export const getServerSideProps = (ctx) => {
-    const user = {};
+export const getServerSideProps = async (ctx) => {
+    let user = {};
+    try {
+        const res = await axios.get('/users/' + ctx.params.id);
+        user = res.data;
+    } catch (e) {
+        console.log(e);
+    }
+
+    if(isEmpty(user)){
+        return {
+            notFound: true,
+        }
+    }
 
     return {
         props: {
-            user
-        }
+            user,
+        },
     }
 }
 
-export default userId
+export default id
