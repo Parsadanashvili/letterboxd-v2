@@ -1,14 +1,13 @@
-import StepAvatar from "../components/Auth/StepAvatar";
 import StepUsername from "../components/Auth/StepUsername";
 import StepEmail from "../components/Auth/StepEmail";
 import {useState} from "react";
 import * as cookie from 'cookie-cutter'
 import {isEmpty} from "lodash";
+import Head from "next/head";
 
 const steps = {
     1: StepEmail,
     2: StepUsername,
-    3: StepAvatar,
 }
 
 const Auth = ({currentStep}) => {
@@ -24,9 +23,15 @@ const Auth = ({currentStep}) => {
     }
 
     return (
-        <div className={"my-auto"}>
-            <Step changeStep={handleChangeStep}/>
-        </div>
+        <>
+            <Head>
+                <title>Authenticate</title>
+                <meta name="description" content="Authenticate" />
+            </Head>
+            <div className={"my-auto"}>
+                <Step changeStep={handleChangeStep}/>
+            </div>
+        </>
     )
 }
 
@@ -38,11 +43,15 @@ export const getServerSideProps = (ctx) => {
 
     if(!isEmpty(user) && !user.username) {
         step = 2;
-    } else if(!isEmpty(user) && !user.avatar) {
-        step = 3;
+    } else {
+
     }
 
     return {
+        redirect: {
+            permanent: false,
+            destination: "/",
+        },
         props: {
             currentStep: step
         }

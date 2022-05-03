@@ -1,10 +1,12 @@
 import Button from "./UI/Button";
 import Styles from "../styles/Header.module.css"
 import Link from "next/link";
-import {useState} from "react";
+import {useContext, useState} from "react";
+import AuthContext from "../Context/auth-context";
 
 const Header = () => {
-    const [isLoggedIn, setIsLoggedIn] = useState(false);
+    const authCtx = useContext(AuthContext);
+    const isLoggedIn = authCtx.isLoggedIn;
 
     return (
         <div className={Styles.header}>

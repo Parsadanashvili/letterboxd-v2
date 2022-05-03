@@ -3,11 +3,12 @@ import CardBody from "../UI/CardBody";
 import Input from "../UI/Input";
 import Button from "../UI/Button";
 import Card from "../UI/Card";
-import {useEffect, useRef, useState} from "react";
+import {useContext, useEffect, useRef, useState} from "react";
 import api from "../../lib/api";
-import Cookies from "cookie-cutter";
+import AuthContext from "../../Context/auth-context";
 
 const StepEmail = ({changeStep}) => {
+    const authCtx = useContext(AuthContext);
     const [sentOtp, setSentOtp] = useState(false);
     const emailRef = useRef();
     const otpRef = useRef();
@@ -42,8 +43,7 @@ const StepEmail = ({changeStep}) => {
 
         api().post('http://localhost:3003/auth/verify', {email, otp})
             .then(async response => {
-                await Cookies.set('accessToken', response.data.access_token);
-                await Cookies.set('user', JSON.stringify(response.data.user));
+                await authCtx.login(response.data.access_token, response.data.user);
                 if(response.data.user?.username) {
                     changeStep(2);
                 } else {

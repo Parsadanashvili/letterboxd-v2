@@ -1,21 +1,28 @@
 import Button from "../components/UI/Button";
-import {Fragment} from "react";
+import {Fragment, useContext} from "react";
 import Link from "next/link";
+import Head from "next/head";
+import AuthContext from "../Context/auth-context";
+import GetStarted from "../components/GetStarted";
 
 export default function Home() {
-    return (
-        <Fragment>
-            <section className={"home-banner"}>
-                <div className={"text-[30px] md:text-[60px] max-w-[650px] font-medium"}>Unlimited movies, TV shows, and more.</div>
+    const authCtx = useContext(AuthContext);
+    const isLoggedIn = authCtx.isLoggedIn;
 
-                <img src={"/logo.svg"} className={"w-36 md:w-56 absolute bottom-[-30px] md:bottom-[-50px]"} />
-            </section>
+    if(isLoggedIn) {
+        return (
+            <Fragment>
+                <Head>
+                    <title>Letterboxd V2</title>
+                </Head>
+                <section className={"home-banner"}>
+                    <div className={"text-[30px] md:text-[60px] max-w-[650px] font-medium"}>Unlimited movies, TV shows, and more.</div>
 
-            <div className={"flex justify-center items-center my-auto"}>
-                <Link href={"/auth"} passHref>
-                    <Button className={"px-12 py-3"}>Get Started</Button>
-                </Link>
-            </div>
-        </Fragment>
-    )
+                    <img src={"/logo.svg"} className={"w-36 md:w-56 absolute bottom-[-30px] md:bottom-[-50px]"} />
+                </section>
+            </Fragment>
+        );
+    } else {
+        return <GetStarted/>
+    }
 }
