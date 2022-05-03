@@ -18,7 +18,7 @@ const Sidebar = () => {
 
     return (
         <div className={`fixed xl:hidden bottom-0 right-0 transition-all ease-in-out z-[99999] bg-[#151328] ${sidebarIsOpen ? "w-[300px] visible" : "w-[0px] invisible"} h-[calc(100vh-95px)] shadow-2xl`}>
-            <Link href={"/profile"}>
+            <Link href={"/userId"}>
                 <div className={"flex items-center justify-end m-7"}>
                     <div className={"mr-3"}>
                         <p className={"text-white cursor-pointer"}>{authCtx.user?.username}</p>
