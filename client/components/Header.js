@@ -99,13 +99,13 @@ const Header = () => {
                                         </div>
                                     </Link>
                                 </li>
-                                <li className={"relative"}>
+                                <li ref={dropdown} className={"relative"}>
                                     <div onClick={toggleIsOpen} className={"rounded-full overflow-hidden w-[35px] h-[35px]"}>
                                         <img className={"cursor-pointer"} src={authCtx.user?.avatar} alt={"Avatar"} />
                                     </div>
 
                                     {isOpen && (
-                                        <ul ref={dropdown} className={"absolute top-[130%] right-0 bg-[#1f1d36] space-y-1 shadow-2xl shadow-[#E9A6A6] w-[100%] min-w-[230px] p-2 rounded-xl"}>
+                                        <ul className={"absolute top-[130%] right-0 bg-[#1f1d36] space-y-1 shadow-2xl shadow-[#E9A6A6] w-[100%] min-w-[230px] p-2 rounded-xl"}>
                                             <li className={"cursor-pointer p-3 hover:bg-[#E9A6A6] hover:text-[#1F1D36] rounded-xl"}>
                                                 <div className={"flex items-center space-x-3"}>
                                                     <UserIcon className={"h-6 w-6"}/>
