@@ -22,6 +22,9 @@ mongoose
 const authRoutes = require('./routes/auth');
 app.use('/', authRoutes);
 
+const userRoutes = require('./routes/userRoutes');
+app.use('/users', userRoutes);
+
 app.listen(process.env.PORT || 3003, () => {
     console.log('Server started on port 3003');
 });
