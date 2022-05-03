@@ -9,6 +9,7 @@
     "lint": "./node_modules/.bin/next lint"
   },
   "dependencies": {
+    "@heroicons/react": "^1.0.6",
     "@reduxjs/toolkit": "^1.8.1",
     "axios": "^0.27.2",
     "cookie-cutter": "^0.2.0",

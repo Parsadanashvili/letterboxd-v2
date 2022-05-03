@@ -1,13 +1,18 @@
 import {NextResponse} from "next/server";
 import jwt from "jsonwebtoken";
+import {isEmpty} from "lodash";
 
 export async function middleware (req) {
-    const authorization = req.cookies.accessToken;
-
-    let user = JSON.parse(req.cookies.user ?? '{}');
-
     let token = null;
-    if(authorization != null) {
+    let user;
+
+    const authorization = req.cookies.accessToken;
+    const authUser = req.cookies?.user;
+    if(!isEmpty(authUser)) {
+        user = JSON.parse(req.cookies?.user);
+    }
+
+    if(!isEmpty(authorization)) {
         token = await jwt.verify(authorization, process.env.TOKEN_SECRET);
     }
 

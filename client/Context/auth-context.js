@@ -46,8 +46,8 @@ export const AuthContextProvider = (props) => {
     const logoutHandler = useCallback(() => {
         setToken(null);
         setUser(null);
-        Cookies.set('accessToken', null);
-        Cookies.set('user', null);
+        Cookies.set('accessToken', "");
+        Cookies.set('user', "");
     }, []);
 
     const contextValue = {
