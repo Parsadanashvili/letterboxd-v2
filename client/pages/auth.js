@@ -38,20 +38,22 @@ const Auth = ({currentStep}) => {
 export const getServerSideProps = (ctx) => {
     let step = 1;
 
+    let redirect;
+
     const getCookie = ctx.req.headers.cookie
     const user = JSON.parse(cookie(getCookie).get('user') ?? '{}');
 
     if(!isEmpty(user) && !user.username) {
         step = 2;
-    } else {
-
+    } else if(!isEmpty(user) && user.username) {
+        redirect = {
+            destination: "/",
+            permanent: false,
+        }
     }
 
     return {
-        redirect: {
-            permanent: false,
-            destination: "/",
-        },
+        redirect,
         props: {
             currentStep: step
         }

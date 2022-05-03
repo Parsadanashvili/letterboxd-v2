@@ -15,11 +15,6 @@ export default function Home() {
                 <Head>
                     <title>Letterboxd V2</title>
                 </Head>
-                <section className={"home-banner"}>
-                    <div className={"text-[30px] md:text-[60px] max-w-[650px] font-medium"}>Unlimited movies, TV shows, and more.</div>
-
-                    <img src={"/logo.svg"} className={"w-36 md:w-56 absolute bottom-[-30px] md:bottom-[-50px]"} />
-                </section>
             </Fragment>
         );
     } else {

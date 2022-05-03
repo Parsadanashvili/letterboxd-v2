@@ -12,9 +12,9 @@ export default function GetStarted() {
             </Head>
 
             <section className={"home-banner"}>
-                <div className={"text-[30px] md:text-[60px] max-w-[650px] font-medium"}>Unlimited movies, TV shows, and more.</div>
+                <img src={"/logo.svg"} className={"w-36 md:w-56"} />
 
-                <img src={"/logo.svg"} className={"w-36 md:w-56 absolute bottom-[-30px] md:bottom-[-50px]"} />
+                <div className={"text-[20px] md:text-[40px] max-w-[650px] font-medium  absolute bottom-[-30px] md:bottom-[-60px]"}>Track films you’ve watched. Save those you want to see. Tell your friends what’s good</div>
             </section>
 
             <div className={"flex justify-center items-center my-auto"}>

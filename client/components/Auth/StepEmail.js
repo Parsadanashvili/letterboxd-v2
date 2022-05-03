@@ -6,8 +6,10 @@ import Card from "../UI/Card";
 import {useContext, useEffect, useRef, useState} from "react";
 import api from "../../lib/api";
 import AuthContext from "../../Context/auth-context";
+import {useRouter} from "next/router";
 
 const StepEmail = ({changeStep}) => {
+    const router = useRouter();
     const authCtx = useContext(AuthContext);
     const [sentOtp, setSentOtp] = useState(false);
     const emailRef = useRef();
@@ -45,7 +47,7 @@ const StepEmail = ({changeStep}) => {
             .then(async response => {
                 await authCtx.login(response.data.access_token, response.data.user);
                 if(response.data.user?.username) {
-                    changeStep(2);
+                    router.push('/');
                 } else {
                     changeStep(1);
                 }

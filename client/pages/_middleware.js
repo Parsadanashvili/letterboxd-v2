@@ -4,7 +4,7 @@ import jwt from "jsonwebtoken";
 export async function middleware (req) {
     const authorization = req.cookies.accessToken;
 
-    let user = JSON.parse(req.cookies.user);
+    let user = JSON.parse(req.cookies.user ?? '{}');
 
     let token = null;
     if(authorization != null) {
