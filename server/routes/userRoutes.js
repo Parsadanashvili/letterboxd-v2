@@ -50,7 +50,11 @@ router.get('/:id', (req, res) => {
     const { id } = req.params;
     User.findById(id)
         .then((user) => {
-            return res.json({ username: user.username, avatar: user.avatar });
+            return res.json({
+                username: user.username,
+                avatar: user.avatar,
+                _id: user._id,
+            });
         })
         .catch((err) => {
             return res.status(404).json({ message: 'User not found' });
