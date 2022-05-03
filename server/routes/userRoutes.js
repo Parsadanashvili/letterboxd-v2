@@ -56,7 +56,7 @@ router.get('/:id', (req, res) => {
                 _id: user._id,
             });
         })
-        .catch((err) => {
+        .catch(() => {
             return res.status(404).json({ message: 'User not found' });
         });
 });
