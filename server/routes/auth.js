@@ -79,7 +79,7 @@ router.post('/auth/verify', async (req, res) => {
     let { email, otp } = req.body;
     email = email.toLowerCase();
     const user = await User.findOne({ email });
-    if ((user) !== null) {
+    if (user !== null) {
         OTP.findOne({ email })
             .then((code) => {
                 if (code.otp === otp) {
@@ -116,9 +116,18 @@ router.put('/users/', ensureToken, async (req, res) => {
     const email = jwt.verify(req.token, process.env.TOKEN_SECRET);
     const user = await User.findOne({ email: email });
 
+    const { username } = req.body;
+    const { avatar } = req.body;
+
     if (user !== null) {
-        await User.findOneAndUpdate({ email }, { username: req.body.username });
-        return res.json({ message: 'Username has been updated' });
+        if (username.length > 6) {
+            await User.findOneAndUpdate({ email }, { username });
+            return res.json({ message: 'Username has been updated' });
+        } else {
+            return res
+                .status(403)
+                .json({ message: 'Username must be more than 6 characters' });
+        }
     } else {
         return res.status(404).json({ message: 'User not found' });
     }
