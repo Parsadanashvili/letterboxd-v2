@@ -53,7 +53,7 @@ const Header = () => {
                             <ul className={"flex items-center space-x-8 text-gray-400"}>
                                 <li>
                                     <Link href={"/"}>
-                                        <div className={"flex items-center justify-center space-x-2 cursor-pointer hover:text-gray-200"}>
+                                        <div className={"flex items-center justify-center space-x-2 cursor-pointer hover:text-[#E9A6A6]"}>
                                             <HomeIcon className={"h-6"}/>
                                             <div>Home</div>
                                         </div>
@@ -61,7 +61,7 @@ const Header = () => {
                                 </li>
                                 <li>
                                     <Link href={"/films"}>
-                                        <div className={"flex items-center justify-center space-x-2 cursor-pointer hover:text-gray-200"}>
+                                        <div className={"flex items-center justify-center space-x-2 cursor-pointer hover:text-[#E9A6A6]"}>
                                             <FilmIcon className={"h-6"}/>
                                             <div>Films</div>
                                         </div>
@@ -69,7 +69,7 @@ const Header = () => {
                                 </li>
                                 <li>
                                     <Link href={"/reviews"}>
-                                        <div className={"flex items-center justify-center space-x-2 cursor-pointer hover:text-gray-200"}>
+                                        <div className={"flex items-center justify-center space-x-2 cursor-pointer hover:text-[#E9A6A6]"}>
                                             <BookOpenIcon className={"h-6"}/>
                                             <div>Reviews</div>
                                         </div>
@@ -77,7 +77,7 @@ const Header = () => {
                                 </li>
                                 <li>
                                     <Link href={"/lists"}>
-                                        <div className={"flex items-center justify-center space-x-2 cursor-pointer hover:text-gray-200"}>
+                                        <div className={"flex items-center justify-center space-x-2 cursor-pointer hover:text-[#E9A6A6]"}>
                                             <MenuAlt3Icon className={"h-6"}/>
                                             <div>Lists</div>
                                         </div>
@@ -85,7 +85,7 @@ const Header = () => {
                                 </li>
                                 <li>
                                     <Link href={"/watchlist"}>
-                                        <div className={"flex items-center justify-center space-x-2 cursor-pointer hover:text-gray-200"}>
+                                        <div className={"flex items-center justify-center space-x-2 cursor-pointer hover:text-[#E9A6A6]"}>
                                             <CollectionIcon className={"h-6"}/>
                                             <div>Watchlist</div>
                                         </div>
@@ -93,7 +93,7 @@ const Header = () => {
                                 </li>
                                 <li>
                                     <Link href={"/likes"}>
-                                        <div className={"flex items-center justify-center space-x-2 cursor-pointer hover:text-gray-200"}>
+                                        <div className={"flex items-center justify-center space-x-2 cursor-pointer hover:text-[#E9A6A6]"}>
                                             <HeartIcon className={"h-6"}/>
                                             <div>Likes</div>
                                         </div>
@@ -105,12 +105,14 @@ const Header = () => {
                                     </div>
 
                                     {isOpen && (
-                                        <ul className={"absolute top-[130%] right-0 bg-[#1f1d36] space-y-1 shadow-2xl shadow-[#E9A6A6] w-[100%] min-w-[230px] p-2 rounded-xl"}>
+                                        <ul className={"absolute top-[130%] right-0 bg-[#1f1d36] space-y-1 shadow-2xl w-[100%] min-w-[230px] p-2 rounded-xl"}>
                                             <li className={"cursor-pointer p-3 hover:bg-[#E9A6A6] hover:text-[#1F1D36] rounded-xl"}>
-                                                <div className={"flex items-center space-x-3"}>
-                                                    <UserIcon className={"h-6 w-6"}/>
-                                                    <div>{authCtx.user?.username}</div>
-                                                </div>
+                                                <Link href={"/profile"}>
+                                                    <div className={"flex items-center space-x-3"}>
+                                                        <UserIcon className={"h-6 w-6"}/>
+                                                        <div>{authCtx.user?.username}</div>
+                                                    </div>
+                                                </Link>
                                             </li>
                                             <li onClick={authCtx.logout} className={"cursor-pointer p-3 hover:bg-red-500 hover:text-white rounded-xl"}>
                                                 <div className={"flex items-center space-x-3"}>
