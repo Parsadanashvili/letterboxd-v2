@@ -1,11 +1,11 @@
 import Header from "../components/Layout/Header";
 import Styles from "../styles/Layout.module.css"
-import {AuthContextProvider} from "../Context/auth-context";
-import {useSelector} from "react-redux";
+import AuthContext, {AuthContextProvider} from "../Context/auth-context";
 import Sidebar from "../components/Layout/Sidebar";
+import {useContext} from "react";
 
 const App = (props) => {
-    const uiSidebarIsOpen = useSelector(state => state.ui.sidebarIsOpen);
+    const authCtx = useContext(AuthContext);
 
     return (
         <AuthContextProvider>
