@@ -25,7 +25,7 @@
 .header__inner-end {
 }
 
-@media (max-width: 1250px) {
+@media (max-width: 1251px) {
     .header__inner {
         width: 100%;
     }

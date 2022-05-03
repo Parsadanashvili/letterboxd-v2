@@ -11,7 +11,7 @@ const App = (props) => {
         <AuthContextProvider>
             <div className={Styles.main}>
                 <Header/>
-                {uiSidebarIsOpen && <Sidebar/>}
+                <Sidebar/>
                 <div className={Styles.contentBody}>
                     {props.children}
                 </div>

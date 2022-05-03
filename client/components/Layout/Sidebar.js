@@ -10,12 +10,14 @@ import {
     MenuAlt3Icon,
     HeartIcon
 } from "@heroicons/react/outline";
+import {useSelector} from "react-redux";
 
 const Sidebar = () => {
     const authCtx = useContext(AuthContext);
+    const sidebarIsOpen = useSelector(state => state.ui.sidebarIsOpen);
 
     return (
-        <div className={"fixed bottom-0 right-0 z-[99999] bg-[#151328] max-w-[300px] w-[100%] h-[calc(100vh-95px)] shadow-2xl"}>
+        <div className={`fixed xl:hidden bottom-0 right-0 transition-all ease-in-out z-[99999] bg-[#151328] ${sidebarIsOpen ? "w-[300px] visible" : "w-[0px] invisible"} h-[calc(100vh-95px)] shadow-2xl`}>
             <Link href={"/profile"}>
                 <div className={"flex items-center justify-end m-7"}>
                     <div className={"mr-3"}>

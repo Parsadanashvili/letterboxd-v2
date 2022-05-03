@@ -11,8 +11,11 @@ import {
     CollectionIcon,
     HeartIcon, LogoutIcon, UserIcon, MenuIcon
 } from "@heroicons/react/outline";
+import {useDispatch} from "react-redux";
+import {uiActions} from "../../store/ui";
 
 const Header = () => {
+    const dispatch = useDispatch();
     const dropdown = useRef();
     const authCtx = useContext(AuthContext);
     const isLoggedIn = authCtx.isLoggedIn;
@@ -51,7 +54,7 @@ const Header = () => {
                     {isLoggedIn ?
                         (
                             <>
-                                <ul className={"items-center space-x-8 text-gray-400 hidden lg:flex"}>
+                                <ul className={"items-center space-x-8 text-gray-400 hidden xl:flex"}>
                                     <li>
                                         <Link href={"/"}>
                                             <div className={"flex items-center justify-center space-x-2 cursor-pointer hover:text-[#E9A6A6]"}>
@@ -125,8 +128,8 @@ const Header = () => {
                                         )}
                                     </li>
                                 </ul>
-                                <div>
-                                    <MenuAlt3Icon className={"cursor-pointer block lg:hidden w-12 h-12 text-white p-2 rounded-xl"}/>
+                                <div className={"block xl:hidden"}>
+                                    <MenuAlt3Icon onClick={() => dispatch(uiActions.toggleSidebar())} className={"cursor-pointer w-12 h-12 text-white p-2 rounded-xl"}/>
                                 </div>
                             </>
                         )
