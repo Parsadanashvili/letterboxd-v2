@@ -33,13 +33,13 @@ router.put('/', ensureToken, async (req, res) => {
     const { avatar } = req.body;
 
     if (user !== null) {
-        if (username.length > 6) {
+        if (username.length > 3) {
             await User.findOneAndUpdate({ email }, { username });
             return res.json({ message: 'Username has been updated' });
         } else {
             return res
                 .status(403)
-                .json({ message: 'Username must be more than 6 characters' });
+                .json({ message: 'Username must be more than 3 characters' });
         }
     } else {
         return res.status(404).json({ message: 'User not found' });
