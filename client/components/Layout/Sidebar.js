@@ -28,7 +28,7 @@ const Sidebar = () => {
             </Link>
 
             <ul className={"mt-12 space-y-3 text-gray-300"}>
-                <li className={"cursor-pointer p-3 hover:bg-[#1f1d36]"}>
+                <li className={"cursor-pointer p-3 hover:bg-[#1f1d36] transition ease-in-out"}>
                     <Link href={"/"}>
                         <div className={"flex justify-end items-center w-[100%] space-x-3 cursor-pointer px-7"}>
                             <HomeIcon className={"h-6"}/>
@@ -37,7 +37,7 @@ const Sidebar = () => {
                     </Link>
                 </li>
 
-                <li className={"cursor-pointer p-3 hover:bg-[#1f1d36]"}>
+                <li className={"cursor-pointer p-3 hover:bg-[#1f1d36] transition ease-in-out"}>
                     <Link href={"/films"}>
                         <div className={"flex justify-end items-center space-x-3 cursor-pointer px-7"}>
                             <FilmIcon className={"h-6"}/>
@@ -46,7 +46,7 @@ const Sidebar = () => {
                     </Link>
                 </li>
 
-                <li className={"cursor-pointer p-3 hover:bg-[#1f1d36]"}>
+                <li className={"cursor-pointer p-3 hover:bg-[#1f1d36] transition ease-in-out"}>
                     <Link href={"/films"}>
                         <div className={"flex justify-end items-center space-x-3 cursor-pointer px-7"}>
                             <BookOpenIcon className={"h-6"}/>
@@ -55,7 +55,7 @@ const Sidebar = () => {
                     </Link>
                 </li>
 
-                <li className={"cursor-pointer p-3 hover:bg-[#1f1d36]"}>
+                <li className={"cursor-pointer p-3 hover:bg-[#1f1d36] transition ease-in-out"}>
                     <Link href={"/lists"}>
                         <div className={"flex justify-end items-center space-x-3 cursor-pointer px-7"}>
                             <MenuAlt3Icon className={"h-6"}/>
@@ -64,7 +64,7 @@ const Sidebar = () => {
                     </Link>
                 </li>
 
-                <li className={"cursor-pointer p-3 hover:bg-[#1f1d36]"}>
+                <li className={"cursor-pointer p-3 hover:bg-[#1f1d36] transition ease-in-out"}>
                     <Link href={"/films"}>
                         <div className={"flex justify-end items-center space-x-3 cursor-pointer px-7"}>
                             <CollectionIcon className={"h-6"}/>
@@ -73,7 +73,7 @@ const Sidebar = () => {
                     </Link>
                 </li>
 
-                <li className={"cursor-pointer p-3 hover:bg-[#1f1d36]"}>
+                <li className={"cursor-pointer p-3 hover:bg-[#1f1d36] transition ease-in-out"}>
                     <Link href={"/films"}>
                         <div className={"flex justify-end items-center space-x-3 cursor-pointer px-7"}>
                             <HeartIcon className={"h-6"}/>
@@ -82,7 +82,7 @@ const Sidebar = () => {
                     </Link>
                 </li>
 
-                <li onClick={authCtx.logout} className={"cursor-pointer p-3 hover:bg-red-500 text-gray-300"}>
+                <li onClick={authCtx.logout} className={"cursor-pointer p-3 hover:bg-red-500 text-gray-300 transition ease-in-out"}>
                     <div className={"flex justify-end items-center space-x-3 px-7"}>
                         <LogoutIcon className={"h-6 w-6"}/>
                         <div>Logout</div>
