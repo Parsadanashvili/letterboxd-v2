@@ -100,7 +100,7 @@ const Header = () => {
                                     </Link>
                                 </li>
                                 <li className={"relative"}>
-                                    <div onClick={toggleIsOpen} className={"rounded-full overflow-hidden w-[45px] h-[45px]"}>
+                                    <div onClick={toggleIsOpen} className={"rounded-full overflow-hidden w-[35px] h-[35px]"}>
                                         <img className={"cursor-pointer"} src={authCtx.user?.avatar} alt={"Avatar"} />
                                     </div>
 
