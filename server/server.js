@@ -5,12 +5,12 @@ const mongoose = require('mongoose');
 const cors = require('cors');
 const dotenv = require('dotenv').config();
 
-const corsOptions = {
-    origin: 'http://localhost:3000',
-    optionsSuccessStatus: 200,
-};
+// let corsOptions = {
+//     origin: 'http://localhost:3000',
+//     optionsSuccessStatus: 200,
+// };
 
-app.use(cors(corsOptions));
+app.use(cors());
 app.use(bp.json());
 app.use(bp.urlencoded({ extended: true }));
 app.use(express.static('uploads'));

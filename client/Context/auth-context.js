@@ -5,6 +5,8 @@ const AuthContext = React.createContext({
     token: '',
     user: {},
     isLoggedIn: false,
+    fetchUser: (user) => {
+    },
     login: (token) => {
     },
     logout: () => {
@@ -36,6 +38,11 @@ export const AuthContextProvider = (props) => {
 
     const userIsLoggedIn = !!token;
 
+    const fetchUser = async (user) => {
+        Cookies.set('user', JSON.stringify(user));
+        await setUser(user);
+    }
+
     const loginHandler = (token, user) => {
         setToken(token)
         setUser(user)
@@ -55,6 +62,7 @@ export const AuthContextProvider = (props) => {
         user: user,
         isLoggedIn: userIsLoggedIn,
         login: loginHandler,
+        fetchUser: fetchUser,
         logout: logoutHandler
     }
 

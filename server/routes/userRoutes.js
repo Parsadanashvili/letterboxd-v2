@@ -7,7 +7,7 @@ const path = require('path');
 const fs = require('fs');
 
 const ensureToken = (req, res, next) => {
-    const bearerHeader = req.headers['authorization'];
+    const bearerHeader = req.headers.authorization;
     if (typeof bearerHeader !== 'undefined') {
         const bearer = bearerHeader.split(' ');
         const bearerToken = bearer[1];
@@ -18,11 +18,21 @@ const ensureToken = (req, res, next) => {
     }
 };
 
+function makeid(length) {
+    var result           = '';
+    var characters       = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+    var charactersLength = characters.length;
+    for ( var i = 0; i < length; i++ ) {
+        result += characters.charAt(Math.floor(Math.random() *
+            charactersLength));
+    }
+    return result;
+}
+
 let storage = multer.diskStorage({
     destination: './uploads',
     filename: (req, file, cb) => {
-        console.log(file);
-        cb(null, Date.now() + path.extname(file.originalname));
+        cb(null, makeid(20) + path.extname(file.originalname));
     },
 });
 
@@ -90,17 +100,18 @@ router.get('/:id', (req, res) => {
         });
 });
 
-router.post('/:id', upload.single('avatar'), ensureToken, async (req, res) => {
-    const { id } = req.params;
-    const token = jwt.verify(req.token, process.env.TOKEN_SECRET);
+router.post('/', upload.single('avatar'), ensureToken, async (req, res) => {
+    const token = jwt.verify(req.headers.authorization, process.env.TOKEN_SECRET);
     const user = await User.findOne({ email: token });
     const url = process.env.URL || 'http://localhost:3003';
 
-    fs.readFile(path.join('./uploads' + user.avatar.split('/')[3]), (err, data) => {
-        if (err) {
-            await user.updateOne({ avatar: '/assets/images/avatar.png'});
-        }
-    })
+    if(user.avatar !== '/assets/images/avatar.png'){
+        fs.readFile(path.join('./uploads' + user.avatar.split('/')[3]), (err, data) => {
+            if (err) {
+                user.updateOne({ avatar: '/assets/images/avatar.png'});
+            }
+        })
+    }
 
     if (user.avatar !== '/assets/images/avatar.png') {
         fs.unlink(
@@ -115,7 +126,8 @@ router.post('/:id', upload.single('avatar'), ensureToken, async (req, res) => {
         await user.updateOne({
             avatar: `${url}/${req.file.filename}`,
         });
-        return res.status(200).json({ message: 'Uploaded' });
+
+        return res.status(200).json({ message: 'Uploaded', avatar: url + '/' + req.file.filename });
     } else {
         return res.status(404).json({ message: 'Forbidden' });
     }
