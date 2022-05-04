@@ -96,13 +96,17 @@ router.post('/:id', upload.single('avatar'), ensureToken, async (req, res) => {
     const user = await User.findOne({ email: token });
     const url = process.env.URL || 'http://localhost:3003';
 
+    fs.readFile(path.join('./uploads' + user.avatar.split('/')[3]), (err, data) => {
+        if (err) {
+            await user.updateOne({ avatar: '/assets/images/avatar.png'});
+        }
+    })
+
     if (user.avatar !== '/assets/images/avatar.png') {
         fs.unlink(
             path.join('./uploads/' + user.avatar.split('/')[3]),
-            function async (err) {
-                await user.updateOne({ avatar: '/assets/images/avatar.png'});
+            function (err) {
                 if (err) throw err;
-
             }
         );
     }
