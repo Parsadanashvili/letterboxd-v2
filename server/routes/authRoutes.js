@@ -7,29 +7,6 @@ const { body, validationResult } = require('express-validator');
 const jwt = require('jsonwebtoken');
 const OTP = require('../models/OTP');
 
-const ensureToken = (req, res, next) => {
-    const bearerHeader = req.headers['authorization'];
-    if (typeof bearerHeader !== 'undefined') {
-        const bearer = bearerHeader.split(' ');
-        const bearerToken = bearer[1];
-        req.token = bearerToken;
-        next();
-    } else {
-        res.sendStatus(403);
-    }
-};
-
-router.get('/users', ensureToken, (req, res) => {
-    jwt.verify(req.token, process.env.TOKEN_SECRET, (err) => {
-        if (err) {
-            res.sendStatus(403).json({ message: 'Forbidden' });
-        }
-        User.find().then((users) => {
-            return res.json({ users });
-        });
-    });
-});
-
 router.post('/auth', async (req, res) => {
     let { email } = req.body;
     let user = await User.findOne({ email });
@@ -109,27 +86,6 @@ router.post('/auth/verify', async (req, res) => {
                 });
             }
         });
-    }
-});
-
-router.put('/users/', ensureToken, async (req, res) => {
-    const email = jwt.verify(req.token, process.env.TOKEN_SECRET);
-    const user = await User.findOne({ email: email });
-
-    const { username } = req.body;
-    const { avatar } = req.body;
-
-    if (user !== null) {
-        if (username.length > 6) {
-            await User.findOneAndUpdate({ email }, { username });
-            return res.json({ message: 'Username has been updated' });
-        } else {
-            return res
-                .status(403)
-                .json({ message: 'Username must be more than 6 characters' });
-        }
-    } else {
-        return res.status(404).json({ message: 'User not found' });
     }
 });
 

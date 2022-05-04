@@ -1,6 +1,9 @@
 const express = require('express');
 const router = express.Router();
 const User = require('../models/User');
+const multer = require('multer');
+const jwt = require('jsonwebtoken');
+const path = require('path');
 
 const ensureToken = (req, res, next) => {
     const bearerHeader = req.headers['authorization'];
@@ -13,6 +16,31 @@ const ensureToken = (req, res, next) => {
         res.sendStatus(403);
     }
 };
+
+let storage = multer.diskStorage({
+    destination: './uploads',
+    filename: (req, file, cb) => {
+        console.log(file);
+        cb(null, Date.now() + path.extname(file.originalname));
+    },
+});
+
+const upload = multer({
+    storage,
+    dest: './uploads',
+    fileFilter: (req, file, cb) => {
+        if (
+            file.mimetype == 'image/png' ||
+            file.mimetype == 'image/jpg' ||
+            file.mimetype == 'image/jpeg'
+        ) {
+            cb(null, true);
+        } else {
+            cb(null, false);
+            return cb(new Error('Only .png, .jpg and .jpeg format allowed!'));
+        }
+    },
+});
 
 router.get('/', ensureToken, (req, res) => {
     jwt.verify(req.token, process.env.TOKEN_SECRET, (err) => {
@@ -59,6 +87,22 @@ router.get('/:id', (req, res) => {
         .catch(() => {
             return res.status(404).json({ message: 'User not found' });
         });
+});
+
+router.post('/:id', upload.single('avatar'), ensureToken, async (req, res) => {
+    const { id } = req.params;
+    const token = jwt.verify(req.token, process.env.TOKEN_SECRET);
+    const user = await User.findOne({ email: token });
+    const url = process.env.URL || 'http://localhost:3003';
+
+    if (user !== null) {
+        await user.update({
+            avatar: `${url}/${req.file.filename}`,
+        });
+        return res.status(200).json({ message: 'Uploaded' });
+    } else {
+        return res.status(404).json({ message: 'Forbidden' });
+    }
 });
 
 module.exports = router;

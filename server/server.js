@@ -8,7 +8,7 @@ const dotenv = require('dotenv').config();
 app.use(cors());
 app.use(bp.json());
 app.use(bp.urlencoded({ extended: true }));
-
+app.use(express.static('uploads'));
 // Connecting DB
 mongoose
     .connect(process.env.DB_URI, {
@@ -19,7 +19,7 @@ mongoose
     .catch((err) => console.log(err));
 
 // Routes
-const authRoutes = require('./routes/auth');
+const authRoutes = require('./routes/authRoutes');
 app.use('/', authRoutes);
 
 const userRoutes = require('./routes/userRoutes');
