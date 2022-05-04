@@ -19,12 +19,14 @@ const ensureToken = (req, res, next) => {
 };
 
 function makeid(length) {
-    var result           = '';
-    var characters       = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+    var result = '';
+    var characters =
+        'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
     var charactersLength = characters.length;
-    for ( var i = 0; i < length; i++ ) {
-        result += characters.charAt(Math.floor(Math.random() *
-            charactersLength));
+    for (var i = 0; i < length; i++) {
+        result += characters.charAt(
+            Math.floor(Math.random() * charactersLength)
+        );
     }
     return result;
 }
@@ -53,7 +55,7 @@ const upload = multer({
     },
 });
 
-router.get('/', ensureToken, (req, res) => {
+router.get('/users', ensureToken, (req, res) => {
     jwt.verify(req.token, process.env.TOKEN_SECRET, (err) => {
         if (err) {
             res.sendStatus(403).json({ message: 'Forbidden' });
@@ -64,7 +66,7 @@ router.get('/', ensureToken, (req, res) => {
     });
 });
 
-router.put('/', ensureToken, async (req, res) => {
+router.put('/users', ensureToken, async (req, res) => {
     const email = jwt.verify(req.token, process.env.TOKEN_SECRET);
     const user = await User.findOne({ email: email });
 
@@ -85,7 +87,7 @@ router.put('/', ensureToken, async (req, res) => {
     }
 });
 
-router.get('/:id', (req, res) => {
+router.get('/users/:id', (req, res) => {
     const { id } = req.params;
     User.findById(id)
         .then((user) => {
@@ -100,34 +102,56 @@ router.get('/:id', (req, res) => {
         });
 });
 
-router.post('/', upload.single('avatar'), ensureToken, async (req, res) => {
+router.post(
+    '/users',
+    upload.single('avatar'),
+    ensureToken,
+    async (req, res) => {
+        const token = jwt.verify(req.token, process.env.TOKEN_SECRET);
+        const user = await User.findOne({ email: token });
+        const url = process.env.URL || 'http://localhost:3003';
+
+        if (user.avatar !== '/assets/images/avatar.png') {
+            fs.readFile(
+                path.join('./uploads' + user.avatar.split('/')[3]),
+                (err, data) => {
+                    if (err) {
+                        user.updateOne({ avatar: '/assets/images/avatar.png' });
+                    }
+                }
+            );
+        }
+
+        if (user.avatar !== '/assets/images/avatar.png') {
+            fs.unlink(
+                path.join('./uploads/' + user.avatar.split('/')[3]),
+                function (err) {
+                    if (err) throw err;
+                }
+            );
+        }
+
+        if (user !== null) {
+            await user.updateOne({
+                avatar: `${url}/${req.file.filename}`,
+            });
+
+            return res.status(200).json({
+                message: 'Uploaded',
+                avatar: url + '/' + req.file.filename,
+            });
+        } else {
+            return res.status(404).json({ message: 'Forbidden' });
+        }
+    }
+);
+
+router.get('/user', ensureToken, async (req, res) => {
     const token = jwt.verify(req.token, process.env.TOKEN_SECRET);
     const user = await User.findOne({ email: token });
-    const url = process.env.URL || 'http://localhost:3003';
-
-    if(user.avatar !== '/assets/images/avatar.png'){
-        fs.readFile(path.join('./uploads' + user.avatar.split('/')[3]), (err, data) => {
-            if (err) {
-                user.updateOne({ avatar: '/assets/images/avatar.png'});
-            }
-        })
-    }
-
-    if (user.avatar !== '/assets/images/avatar.png') {
-        fs.unlink(
-            path.join('./uploads/' + user.avatar.split('/')[3]),
-            function (err) {
-                if (err) throw err;
-            }
-        );
-    }
 
     if (user !== null) {
-        await user.updateOne({
-            avatar: `${url}/${req.file.filename}`,
-        });
-
-        return res.status(200).json({ message: 'Uploaded', avatar: url + '/' + req.file.filename });
+        return res.status(200).json({ user: user });
     } else {
         return res.status(404).json({ message: 'Forbidden' });
     }

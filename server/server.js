@@ -29,7 +29,7 @@ const authRoutes = require('./routes/authRoutes');
 app.use('/', authRoutes);
 
 const userRoutes = require('./routes/userRoutes');
-app.use('/users', userRoutes);
+app.use('/', userRoutes);
 
 app.listen(process.env.PORT || 3003, () => {
     console.log('Server started on port 3003');
