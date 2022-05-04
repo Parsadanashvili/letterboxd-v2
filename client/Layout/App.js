@@ -3,6 +3,7 @@ import Styles from "../styles/Layout.module.css"
 import AuthContext, {AuthContextProvider} from "../Context/auth-context";
 import Sidebar from "../components/Layout/Sidebar";
 import {useContext} from "react";
+import {Toaster} from "react-hot-toast";
 
 const App = (props) => {
     const authCtx = useContext(AuthContext);

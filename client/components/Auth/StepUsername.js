@@ -6,6 +6,7 @@ import Input from "../UI/Input";
 import Button from "../UI/Button";
 import api from "../../lib/api";
 import Cookies from "cookie-cutter";
+import axios from "axios";
 
 const StepUsername = ({changeStep}) => {
     const usernameRef = useRef();
@@ -20,7 +21,7 @@ const StepUsername = ({changeStep}) => {
             return;
         }
 
-        api().put('/users', {username})
+        axios.put('/users', {username})
             .then(async response => {
                 if(response.data.message) {
                     const user = await JSON.parse(Cookies.get('user'));

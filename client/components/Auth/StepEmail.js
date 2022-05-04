@@ -7,6 +7,8 @@ import {useContext, useEffect, useRef, useState} from "react";
 import api from "../../lib/api";
 import AuthContext from "../../Context/auth-context";
 import {useRouter} from "next/router";
+import axios from "axios";
+import {toast} from "react-hot-toast";
 
 const StepEmail = ({changeStep}) => {
     const router = useRouter();
@@ -19,7 +21,7 @@ const StepEmail = ({changeStep}) => {
         if(sentOtp) {
             setTimeout(() => {
                 setSentOtp(false);
-            }, 180000);
+            }, 120000);
         }
     }, [sentOtp]);
 
@@ -27,9 +29,21 @@ const StepEmail = ({changeStep}) => {
         if(sentOtp) return;
 
         const email = emailRef.current.value;
-        api().post('/auth', {email})
+        axios.post('/auth', {email})
             .then(response => {
-                alert('OTP sent, check email');
+                toast.success('OTP Sent Successfully, Check email.', {
+                    style: {
+                        borderRadius: '10px',
+                        padding: '16px',
+                        color: '#FFFAEE',
+                        fontSize: '14px',
+                        backgroundColor: '#1f1d36',
+                    },
+                    iconTheme: {
+                        color: '#E9A6A6',
+                        secondary: '#FFFAEE',
+                    },
+                });
                 setSentOtp(true);
             })
             .catch(error => {
@@ -43,9 +57,22 @@ const StepEmail = ({changeStep}) => {
         const email = emailRef.current.value;
         const otp = +otpRef.current.value;
 
-        api().post('http://localhost:3003/auth/verify', {email, otp})
+        axios.post('http://localhost:3003/auth/verify', {email, otp})
             .then(async response => {
                 await authCtx.login(response.data.access_token, response.data.user);
+                toast.success('Authenticated Successfully.', {
+                    style: {
+                        borderRadius: '10px',
+                        padding: '16px',
+                        color: '#FFFAEE',
+                        fontSize: '14px',
+                        backgroundColor: '#1f1d36',
+                    },
+                    iconTheme: {
+                        color: '#E9A6A6',
+                        secondary: '#FFFAEE',
+                    },
+                });
                 if(response.data.user?.username) {
                     router.push('/');
                 } else {
