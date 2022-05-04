@@ -4,7 +4,6 @@ import Input from "../UI/Input";
 import Button from "../UI/Button";
 import Card from "../UI/Card";
 import {useContext, useEffect, useRef, useState} from "react";
-import api from "../../lib/api";
 import AuthContext from "../../Context/auth-context";
 import {useRouter} from "next/router";
 import axios from "axios";

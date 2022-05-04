@@ -7,6 +7,7 @@ import Button from "../UI/Button";
 import api from "../../lib/api";
 import Cookies from "cookie-cutter";
 import axios from "axios";
+import {toast} from "react-hot-toast";
 
 const StepUsername = ({changeStep}) => {
     const usernameRef = useRef();
@@ -17,7 +18,19 @@ const StepUsername = ({changeStep}) => {
         const username = usernameRef.current.value;
 
         if(!username.trim() || username.trim().length < 3) {
-            alert('Username must be at least 3 characters long');
+            toast.error('Username must be at least 3 letters long', {
+                style: {
+                    borderRadius: '10px',
+                    padding: '16px',
+                    color: '#FFFAEE',
+                    fontSize: '14px',
+                    backgroundColor: '#1f1d36',
+                },
+                iconTheme: {
+                    color: '#E9A6A6',
+                    secondary: '#FFFAEE',
+                },
+            });
             return;
         }
 
