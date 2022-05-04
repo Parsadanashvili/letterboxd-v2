@@ -1,12 +1,15 @@
-import {useContext} from "react";
+import {useContext, useState} from "react";
 import AuthContext from "../../Context/auth-context";
 import Button from "../../components/UI/Button";
 import Head from "next/head";
 import axios from "axios";
 import {isEmpty} from "lodash";
+import Modal from "../../components/UI/Modal";
+import Input from "../../components/UI/Input";
 
 const id = ({user}) => {
     const authCtx = useContext(AuthContext);
+    const [showModal, setShowModal] = useState(true);
 
     return (
         <>
@@ -78,6 +81,9 @@ const id = ({user}) => {
                     </div>
                 </div>
             </div>
+            <Modal title={"Upload Avatar"} onClose={() => setShowModal(false)} show={showModal}>
+                <Input type={"file"} />
+            </Modal>
         </>
     )
 }
