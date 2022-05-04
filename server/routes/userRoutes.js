@@ -101,7 +101,7 @@ router.get('/:id', (req, res) => {
 });
 
 router.post('/', upload.single('avatar'), ensureToken, async (req, res) => {
-    const token = jwt.verify(req.headers.authorization, process.env.TOKEN_SECRET);
+    const token = jwt.verify(req.token, process.env.TOKEN_SECRET);
     const user = await User.findOne({ email: token });
     const url = process.env.URL || 'http://localhost:3003';
 
