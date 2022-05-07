@@ -68,8 +68,19 @@ const id = ({user}) => {
             axios.defaults.headers.common["Content-Type"] = "multipart/form-data";
             axios.post('/users/', data).then(response => {
                 if(response.data.avatar) {
-                    authCtx.setAvatar({...authCtx.user, avatar: response.data.avatar});
-                    toast.success("Avatar updated successfully.");
+                    toast.success('Avatar Updated Successfully', {
+                        style: {
+                            borderRadius: '10px',
+                            padding: '16px',
+                            color: '#FFFAEE',
+                            fontSize: '14px',
+                            backgroundColor: '#1f1d36',
+                        },
+                        iconTheme: {
+                            color: '#E9A6A6',
+                            secondary: '#FFFAEE',
+                        },
+                    });
                 }
             })
         }
