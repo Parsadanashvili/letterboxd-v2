@@ -31,6 +31,9 @@ app.use('/', authRoutes);
 const userRoutes = require('./routes/userRoutes');
 app.use('/', userRoutes);
 
+const followRoutes = require('./routes/followRoutes');
+app.use('/', followRoutes);
+
 app.listen(process.env.PORT || 3003, () => {
     console.log('Server started on port 3003');
 });
