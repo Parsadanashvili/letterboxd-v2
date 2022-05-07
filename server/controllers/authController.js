@@ -2,6 +2,7 @@ const OTP = require('../models/OTP');
 const User = require('../models/User');
 const sendOTP = require('../libs/otp');
 const otpGenerator = require('otp-generator');
+const jwt = require('jsonwebtoken')
 
 module.exports = {
     post: async (req, res) => {
@@ -52,37 +53,40 @@ module.exports = {
     verify: async (req, res) => {
         let { email, otp } = req.body;
         email = email.toLowerCase();
+        
         const user = await User.findOne({ email });
-        if (user !== null) {
+        if(user !== null) {
             OTP.findOne({ email })
-                .then((code) => {
-                    if (code.otp === otp) {
-                        const token = jwt.sign(email, process.env.TOKEN_SECRET);
-                        code.remove();
-                        return res.json({
-                            access_token: token,
-                            user: user,
+                .then(async(code) => {
+                    if(code.otp == otp) {
+                        await OTP.deleteOne({ email });
+                        const token = jwt.sign(email, process.env.TOKEN_SECRET)
+                        return res.json({ token, user });
+                    }
+                })
+                .catch(err => {
+                    return res.status(403).json({ message: 'OTP not verified' });
+                })
+        } else {
+            let { email, otp } = req.body;
+            email = email.toLowerCase();
+
+            OTP.findOne({ email })
+                .then(async(code) => {
+                    if(code.otp == otp) {
+                        const newUser = new User({
+                            email,
                         });
+                        await newUser.save()
+                        await OTP.deleteOne({ email });
+
+                        const token = jwt.sign(email, process.env.TOKEN_SECRET)
+                        return res.status(200).json({ token, newUser });
                     }
                 })
                 .catch((err) => {
-                    return res.status(403).json({ message: 'OTP is incorrect' });
-                });
-        } else {
-            OTP.findOne({ email }).then((code) => {
-                if (code.otp === otp) {
-                    const newUser = new User({
-                        email,
-                    });
-                    newUser.save();
-                    const token = jwt.sign(email, process.env.TOKEN_SECRET);
-                    code.remove();
-                    return res.json({
-                        access_token: token,
-                        user: newUser,
-                    });
-                }
-            });
+                    res.status(403).json({ message: 'OTP not verified' });
+                })
         }
     }
 }
