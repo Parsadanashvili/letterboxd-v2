@@ -2,8 +2,8 @@ const express = require('express');
 const router = express.Router();
 const multer = require('multer');
 const ensureToken = require('../libs/ensureToken');
-
 const controller = require('../controllers/userController')
+const path = require('path')
 
 
 function makeid(length) {
